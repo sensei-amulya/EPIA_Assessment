@@ -14,10 +14,8 @@ node_modules/
 .env.local
 
 # SQLite databases (generated locally)
-database/*.db
-database/*.db-journal
-*.db
-*.db-journal
+database/*.db*
+*.db*
 
 # Archives
 *.zip
