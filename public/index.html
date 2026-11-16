@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareFollow — Clinical Patient Follow-up & AI Automation</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-layout">
+    
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo-badge">
+          <span class="logo-icon">🩺</span>
+          <div>
+            <h1 class="logo-title">CareFollow <span class="logo-pill">Clinic OS</span></h1>
+            <p class="logo-subtitle">Apex Health & Wellness Clinic • Follow-up & AI Automation</p>
+          </div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div id="ai-engine-status" class="engine-badge mock">
+          <span class="engine-dot"></span>
+          <span id="engine-label">AI Engine: Mock Mode</span>
+        </div>
+        <button id="btn-seed" class="btn btn-secondary" title="Reset sample fictional patient data">
+          <span class="icon">🌱</span> Reset Demo Data
+        </button>
+        <button id="btn-open-add-patient" class="btn btn-primary">
+          <span class="icon">+</span> New Patient
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="tab-due">
+        <span class="tab-icon">⏰</span>
+        <span>Follow-ups Due Today</span>
+        <span id="badge-due-count" class="tab-badge">0</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-patients">
+        <span class="tab-icon">👥</span>
+        <span>All Patients Directory</span>
+        <span id="badge-all-count" class="tab-badge">0</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-api">
+        <span class="tab-icon">⚡</span>
+        <span>API Docs & Testing</span>
+      </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- TAB 1: DUE TODAY & AI WORKFLOW -->
+      <section id="tab-due" class="tab-pane active">
+        <!-- Workflow Info Banner -->
+        <div class="workflow-banner">
+          <div class="banner-icon">🤖</div>
+          <div class="banner-content">
+            <h3>AI-Assisted WhatsApp Follow-up Workflow</h3>
+            <p>
+              1. <strong>Identify:</strong> Patients with consultation follow-ups due today are listed below.<br>
+              2. <strong>Generate:</strong> The AI drafts a personalized, condition-specific WhatsApp check-in.<br>
+              3. <strong>Review & Approve:</strong> A clinic staff member reviews and edits the draft before simulated sending.
+            </p>
+          </div>
+          <div class="banner-actions">
+            <button id="btn-batch-generate" class="btn btn-accent">
+              <span class="icon">✨</span> Batch Generate Drafts
+            </button>
+          </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-title">Due Today / Overdue</span>
+              <span class="metric-icon">⏰</span>
+            </div>
+            <div id="stat-due-today" class="metric-value">0</div>
+            <div class="metric-footer">Requiring follow-up contact</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-title">Drafts Pending Review</span>
+              <span class="metric-icon">📝</span>
+            </div>
+            <div id="stat-pending-review" class="metric-value">0</div>
+            <div class="metric-footer">Awaiting staff clinical approval</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-title">Approved & Completed</span>
+              <span class="metric-icon">✅</span>
+            </div>
+            <div id="stat-completed" class="metric-value">0</div>
+            <div class="metric-footer">Follow-ups successfully done</div>
+          </div>
+        </div>
+
+        <!-- Due Patients List -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <div>
+              <h2 class="section-title">Patients Due for Follow-up Today (<span id="current-date-display">...</span>)</h2>
+              <p class="section-subtitle">Click "Generate AI Draft" or "Review Draft" to preview the personalized WhatsApp message.</p>
+            </div>
+            <div class="date-controls">
+              <label for="input-target-date">Target Date:</label>
+              <input type="date" id="input-target-date" class="input-date">
+              <button id="btn-refresh-due" class="btn btn-sm btn-outline">Refresh</button>
+            </div>
+          </div>
+
+          <div id="due-patients-container" class="cards-grid">
+            <!-- Rendered dynamically -->
+            <div class="empty-state">Loading due patients...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: ALL PATIENTS DIRECTORY -->
+      <section id="tab-patients" class="tab-pane">
+        <div class="section-card">
+          <div class="section-card-header">
+            <div>
+              <h2 class="section-title">Patient Directory</h2>
+              <p class="section-subtitle">All registered fictional patients, consultation history, and follow-up status.</p>
+            </div>
+            <div class="filter-controls">
+              <div class="search-box">
+                <input type="text" id="patient-search" placeholder="Search by name, condition, or doctor..." class="input-text">
+              </div>
+              <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="pending">Pending</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Patient Name</th>
+                  <th>Phone Number</th>
+                  <th>Condition / Procedure</th>
+                  <th>Attending Doctor</th>
+                  <th>Consultation Date</th>
+                  <th>Follow-up Due</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="patients-table-body">
+                <tr>
+                  <td colspan="8" class="text-center">Loading patient directory...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: API EXPLORER & DOCS -->
+      <section id="tab-api" class="tab-pane">
+        <div class="section-card">
+          <div class="section-card-header">
+            <div>
+              <h2 class="section-title">REST API Specifications & Interactive Testing</h2>
+              <p class="section-subtitle">Comprehensive endpoint documentation matching Task 1 and Task 2 requirements.</p>
+            </div>
+          </div>
+
+          <div class="api-docs-grid">
+            
+            <!-- Endpoint 1 -->
+            <div class="api-endpoint-card">
+              <div class="endpoint-header">
+                <span class="http-badge post">POST</span>
+                <span class="endpoint-path">/api/patients</span>
+              </div>
+              <p class="endpoint-desc">Add a new patient with name, phone, consultation date, next follow-up date, and clinical notes.</p>
+              <div class="code-preview">
+                <pre><code>curl -X POST http://localhost:3000/api/patients \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "David Miller",
+    "phone": "+1-555-0199",
+    "consultation_date": "2026-11-10",
+    "next_followup_date": "2026-11-16",
+    "doctor_name": "Dr. Sarah Mitchell",
+    "condition_or_treatment": "Post-Op Wound Care",
+    "notes": "Check for redness, warmth, or drainage."
+  }'</code></pre>
+              </div>
+            </div>
+
+            <!-- Endpoint 2 -->
+            <div class="api-endpoint-card">
+              <div class="endpoint-header">
+                <span class="http-badge get">GET</span>
+                <span class="endpoint-path">/api/patients</span>
+              </div>
+              <p class="endpoint-desc">Retrieve all patients. Optional query filter: <code>?status=pending|completed</code>.</p>
+              <div class="code-preview">
+                <pre><code>curl http://localhost:3000/api/patients</code></pre>
+              </div>
+            </div>
+
+            <!-- Endpoint 3 -->
+            <div class="api-endpoint-card">
+              <div class="endpoint-header">
+                <span class="http-badge get">GET</span>
+                <span class="endpoint-path">/api/patients/due-today</span>
+              </div>
+              <p class="endpoint-desc">Retrieve patients whose follow-up is due today (and status is pending). Optional: <code>?date=YYYY-MM-DD</code>.</p>
+              <div class="code-preview">
+                <pre><code>curl http://localhost:3000/api/patients/due-today</code></pre>
+              </div>
+            </div>
+
+            <!-- Endpoint 4 -->
+            <div class="api-endpoint-card">
+              <div class="endpoint-header">
+                <span class="http-badge patch">PATCH</span>
+                <span class="endpoint-path">/api/patients/:id/status</span>
+              </div>
+              <p class="endpoint-desc">Update a patient's follow-up status to completed or pending.</p>
+              <div class="code-preview">
+                <pre><code>curl -X PATCH http://localhost:3000/api/patients/1/status \
+  -H "Content-Type: application/json" \
+  -d '{"status": "completed"}'</code></pre>
+              </div>
+            </div>
+
+            <!-- Endpoint 5 (AI) -->
+            <div class="api-endpoint-card">
+              <div class="endpoint-header">
+                <span class="http-badge post">POST</span>
+                <span class="endpoint-path">/api/ai/generate-draft/:patientId</span>
+              </div>
+              <p class="endpoint-desc">Generate personalized WhatsApp follow-up draft using Gemini or Clinical Mock Engine.</p>
+              <div class="code-preview">
+                <pre><code>curl -X POST http://localhost:3000/api/ai/generate-draft/1 \
+  -H "Content-Type: application/json" \
+  -d '{"tone": "caring"}'</code></pre>
+              </div>
+            </div>
+
+            <!-- Endpoint 6 (Review) -->
+            <div class="api-endpoint-card">
+              <div class="endpoint-header">
+                <span class="http-badge patch">PATCH</span>
+                <span class="endpoint-path">/api/ai/drafts/:id/review</span>
+              </div>
+              <p class="endpoint-desc">Staff review & approval: edits draft, marks approved, simulates mock WhatsApp dispatch, and auto-completes follow-up.</p>
+              <div class="code-preview">
+                <pre><code>curl -X PATCH http://localhost:3000/api/ai/drafts/1/review \
+  -H "Content-Type: application/json" \
+  -d '{
+    "status": "approved",
+    "reviewer": "Nurse Alex",
+    "edited_message": "Customized message..."
+  }'</code></pre>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL: ADD PATIENT -->
+  <div id="modal-add-patient" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Register New Patient</h3>
+        <button class="modal-close" data-close-modal="modal-add-patient">&times;</button>
+      </div>
+      <form id="form-add-patient">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="new-name">Patient Full Name <span class="required">*</span></label>
+              <input type="text" id="new-name" required placeholder="e.g. Eleanor Vance" class="input-text">
+            </div>
+            <div class="form-group flex-1">
+              <label for="new-phone">Phone Number <span class="required">*</span></label>
+              <input type="text" id="new-phone" required placeholder="e.g. +1-555-0182" class="input-text">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="new-consult-date">Consultation Date <span class="required">*</span></label>
+              <input type="date" id="new-consult-date" required class="input-date">
+            </div>
+            <div class="form-group flex-1">
+              <label for="new-followup-date">Next Follow-up Date <span class="required">*</span></label>
+              <input type="date" id="new-followup-date" required class="input-date">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="new-doctor">Attending Doctor</label>
+              <input type="text" id="new-doctor" placeholder="Dr. Sarah Mitchell" value="Dr. Sarah Mitchell" class="input-text">
+            </div>
+            <div class="form-group flex-1">
+              <label for="new-condition">Condition / Treatment</label>
+              <input type="text" id="new-condition" placeholder="e.g. Dental Crown Fitting, Hypertension Check" class="input-text">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="new-notes">Clinical Care Notes (Used for AI personalization)</label>
+            <textarea id="new-notes" rows="2" placeholder="e.g. Patient experienced mild bleeding; check if soft diet is comfortable." class="input-textarea"></textarea>
+          </div>
+
+          <div id="form-error-msg" class="error-banner hidden"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modal-add-patient">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Patient</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: STAFF REVIEW & WHATSAPP APPROVAL -->
+  <div id="modal-review-draft" class="modal-backdrop hidden">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Staff Clinical Review & WhatsApp Approval</h3>
+          <p class="modal-subtitle">Review, edit, and approve the AI draft before simulated dispatch.</p>
+        </div>
+        <button class="modal-close" data-close-modal="modal-review-draft">&times;</button>
+      </div>
+
+      <div class="modal-body review-modal-grid">
+        
+        <!-- Left Column: Patient & AI Metadata -->
+        <div class="review-meta-pane">
+          <div class="meta-section">
+            <h4 class="meta-heading">Patient Overview</h4>
+            <div class="meta-item">
+              <span class="meta-label">Name:</span>
+              <span id="review-patient-name" class="meta-val font-semibold">—</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Phone:</span>
+              <span id="review-patient-phone" class="meta-val">—</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Condition:</span>
+              <span id="review-patient-condition" class="meta-val">—</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Doctor:</span>
+              <span id="review-patient-doctor" class="meta-val">—</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Consult Date:</span>
+              <span id="review-patient-consult" class="meta-val">—</span>
+            </div>
+          </div>
+
+          <div class="meta-section">
+            <h4 class="meta-heading">AI Generation Details</h4>
+            <div class="meta-item">
+              <span class="meta-label">Provider:</span>
+              <span id="review-ai-provider" class="provider-tag">—</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Generation Mode:</span>
+              <span id="review-ai-mode" class="meta-val">—</span>
+            </div>
+            <div class="meta-item-block">
+              <span class="meta-label">System Note:</span>
+              <p id="review-ai-note" class="meta-note">—</p>
+            </div>
+          </div>
+
+          <div class="meta-section">
+            <h4 class="meta-heading">Reviewer Information</h4>
+            <div class="form-group">
+              <label for="review-staff-name">Staff Member Name:</label>
+              <input type="text" id="review-staff-name" value="Nurse Alex Rivera, RN" class="input-text">
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: WhatsApp Preview & Live Editor -->
+        <div class="review-whatsapp-pane">
+          
+          <div class="whatsapp-mock-phone">
+            <!-- WhatsApp Chat Header -->
+            <div class="wa-header">
+              <div class="wa-avatar">🏥</div>
+              <div class="wa-contact-info">
+                <div class="wa-contact-name" id="wa-header-name">Apex Health & Wellness</div>
+                <div class="wa-contact-status">Business Account • Follow-up Team</div>
+              </div>
+            </div>
+
+            <!-- WhatsApp Message Body -->
+            <div class="wa-chat-window">
+              <div class="wa-encryption-notice">
+                🔒 Messages are end-to-end encrypted. No real messages are sent in demonstration mode.
+              </div>
+
+              <div class="wa-bubble-container">
+                <div class="wa-bubble">
+                  <div class="wa-bubble-text" id="wa-bubble-preview">
+                    Loading draft message...
+                  </div>
+                  <div class="wa-bubble-time">
+                    <span id="wa-bubble-time-text">10:45 AM</span>
+                    <span class="wa-check">✓✓</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Staff Edit Pane -->
+          <div class="staff-edit-box">
+            <div class="edit-box-header">
+              <label for="review-message-edit" class="font-semibold">Staff Message Editor (Customize prior to sending):</label>
+              <button id="btn-sync-preview" class="btn btn-xs btn-outline">Update Preview</button>
+            </div>
+            <textarea id="review-message-edit" rows="6" class="input-textarea"></textarea>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <div class="footer-notice">
+          🛡️ <em>Review required. Approving will simulate sending to WhatsApp and update the patient's status to <strong>Completed</strong>.</em>
+        </div>
+        <div class="footer-buttons">
+          <button id="btn-reject-draft" class="btn btn-danger">Reject Draft</button>
+          <button id="btn-approve-draft" class="btn btn-success">
+            <span class="icon">✅</span> Approve & Send (Mock WhatsApp)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DISPATCH CONFIRMATION / RECEIPT -->
+  <div id="modal-receipt" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">WhatsApp Mock Dispatch Receipt</h3>
+        <button class="modal-close" data-close-modal="modal-receipt">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="receipt-success-icon">🎉</div>
+        <h4 class="text-center font-bold text-lg mb-2">Message Approved & Dispatched (Mock)</h4>
+        <p class="text-center text-muted mb-4">
+          The follow-up was reviewed by clinic staff, simulated dispatch logged, and patient follow-up marked as <strong>Completed</strong>.
+        </p>
+
+        <div class="receipt-details">
+          <div class="receipt-row">
+            <span>Recipient:</span>
+            <strong id="receipt-recipient">—</strong>
+          </div>
+          <div class="receipt-row">
+            <span>Phone:</span>
+            <strong id="receipt-phone">—</strong>
+          </div>
+          <div class="receipt-row">
+            <span>Mock Message ID:</span>
+            <code id="receipt-mid">—</code>
+          </div>
+          <div class="receipt-row">
+            <span>Dispatched At:</span>
+            <strong id="receipt-time">—</strong>
+          </div>
+          <div class="receipt-row">
+            <span>Follow-up Status:</span>
+            <span class="status-badge completed">Completed</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary w-full" data-close-modal="modal-receipt">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- Client Application Script -->
+  <script src="app.js"></script>
+</body>
+</html>
