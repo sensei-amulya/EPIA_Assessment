@@ -62,8 +62,7 @@ flip/
 ├── tests/
 │   ├── patient.test.js        # Task 1 integration tests
 │   └── ai.test.js             # Task 2 AI workflow tests
-├── AI_IMPLEMENTATION_NOTE.md  # Detailed note on AI tools used & personal implementation
-└── DEMO_VIDEO_SCRIPT.md       # 3-minute video presentation guide & script
+└── AI_IMPLEMENTATION_NOTE.md  # Detailed note on AI tools used & personal implementation
 ```
 
 ---
@@ -356,5 +355,4 @@ To make review and grading seamless, an embedded web dashboard runs on `http://l
 
 - **Source Code:** Clean, modular repository ready for execution.
 - **Documentation:** This `README.md` file.
-- **Demonstration Video Guide:** [`DEMO_VIDEO_SCRIPT.md`](DEMO_VIDEO_SCRIPT.md) for recording a crisp <= 3-minute video.
 - **AI Implementation Note:** [`AI_IMPLEMENTATION_NOTE.md`](AI_IMPLEMENTATION_NOTE.md) documenting AI tools used vs. personal engineering.
