@@ -19,6 +19,9 @@ database/*.db-journal
 *.db
 *.db-journal
 
+# Archives
+*.zip
+
 # OS files
 .DS_Store
 Thumbs.db
